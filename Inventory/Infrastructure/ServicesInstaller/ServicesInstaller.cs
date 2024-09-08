@@ -15,9 +15,9 @@ namespace Inventory.Infrastructure.ServicesInstaller
         {
             services.AddHttpContextAccessor();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddSingleton<IAuthService, AuthService>();
-            services.AddSingleton<IMailHelper, MailHelper>();
-            services.AddSingleton<ISessionHelper, SessionHelper>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IMailHelper, MailHelper>();
+            services.AddScoped<ISessionHelper, SessionHelper>();
             
         }
     }

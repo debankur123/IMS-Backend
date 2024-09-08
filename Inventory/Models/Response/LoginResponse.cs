@@ -2,7 +2,11 @@
 {
     public class LoginResponse
     {
-        public string UserId { get; set; } = "";
-        public string Email { get; set; } = "";
+        public long UserId   { get; set; } = 0;
+        public string Email    { get; set; } = "";
+        public long  RoleId    { get; set; } = 0;
+        public string ?Role     { get; set; } = "";
+        public string ?Otp      { get; set; } = "";
+        public long ExpiryTime  { get; set; }
     }
 }

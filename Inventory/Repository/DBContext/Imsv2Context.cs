@@ -2198,14 +2198,19 @@ public partial class Imsv2Context : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.CompanyId).HasColumnName("CompanyID");
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.CreatedUid).HasColumnName("CreatedUID");
             entity.Property(e => e.DigitalSignPath).IsUnicode(false);
             entity.Property(e => e.Email)
                 .HasMaxLength(500)
                 .IsUnicode(false);
+            entity.Property(e => e.FirstName).IsUnicode(false);
+            entity.Property(e => e.LastName).IsUnicode(false);
+            entity.Property(e => e.LastOtpDate).HasColumnType("datetime");
             entity.Property(e => e.Login)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.MiddleName).IsUnicode(false);
             entity.Property(e => e.Mobile)
                 .HasMaxLength(15)
                 .IsUnicode(false);
@@ -2215,6 +2220,8 @@ public partial class Imsv2Context : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
                 .IsUnicode(false);
+            entity.Property(e => e.RefreshTokenExpiryDate).HasColumnType("datetime");
+            entity.Property(e => e.RefreshTokenStartDate).HasColumnType("datetime");
             entity.Property(e => e.RegDate).HasColumnType("datetime");
             entity.Property(e => e.Sbutype)
                 .HasMaxLength(1)
@@ -2226,6 +2233,7 @@ public partial class Imsv2Context : DbContext
             entity.Property(e => e.SecurityQuestion1).IsUnicode(false);
             entity.Property(e => e.SecurityQuestion2).IsUnicode(false);
             entity.Property(e => e.UnitId).HasColumnName("UnitID");
+            entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
             entity.Property(e => e.UserName)
                 .HasMaxLength(100)
                 .IsUnicode(false);

@@ -4,9 +4,9 @@ namespace Inventory.Models.Request
 {
     public class LoginRequest
     {
-        [DefaultValue("officialpapaidas@gmail.com")]
+        [DefaultValue("bgupta@technoindiagroup.in")]
         public string? UserName { get; set; }
-        [DefaultValue("123")]
-        public string? Password { get; set; }
+        //[DefaultValue("123")]
+        //public string? Password { get; set; }
     }
 }

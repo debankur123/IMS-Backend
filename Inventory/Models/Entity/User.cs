@@ -9,6 +9,12 @@ public partial class User
 
     public string UserName { get; set; } = null!;
 
+    public string? FirstName { get; set; }
+
+    public string? LastName { get; set; }
+
+    public string? MiddleName { get; set; }
+
     public string? Login { get; set; }
 
     public string? Password { get; set; }
@@ -46,6 +52,22 @@ public partial class User
     public long? CompanyId { get; set; }
 
     public long? CreatedUid { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
+    public string? LastOtp { get; set; }
+
+    public DateTime? LastOtpDate { get; set; }
+
+    public string? AccessToken { get; set; }
+
+    public string? RefreshToken { get; set; }
+
+    public DateTime? RefreshTokenExpiryDate { get; set; }
+
+    public DateTime? RefreshTokenStartDate { get; set; }
+
+    public DateTime? UpdatedDate { get; set; }
 
     public DateTime CreateDate { get; set; }
 

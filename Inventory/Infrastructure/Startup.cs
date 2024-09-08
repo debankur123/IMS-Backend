@@ -4,14 +4,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.OpenApi.Models;
 using static System.Net.Mime.MediaTypeNames;
-using System;
 using Inventory.Infrastructure.Options;
 using Common_Helper.CommonHelper;
 using Inventory.Repository.DBContext;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Inventory.Extensions;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.Infrastructure
 {
@@ -19,14 +18,17 @@ namespace Inventory.Infrastructure
     {
         public IConfiguration Configuration { get; }
         private readonly ISwaggerProviderOptions? swaggerOptions;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
             AuditLog.Configuration = Configuration;
             this.swaggerOptions = this.Configuration.GetSection("SwaggerOptions").Get<SwaggerProviderOptions>();
         }
+
         public void ConfigureServices(IServiceCollection services)
         {
+            // CORS Policy
             services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             {
                 builder.AllowAnyOrigin()
@@ -34,12 +36,14 @@ namespace Inventory.Infrastructure
                 .AllowAnyHeader();
             }));
 
+            // Installers for other services
             var installers = typeof(Startup).Assembly.ExportedTypes
-                .Where(x => typeof(IInstaller).IsAssignableFrom(x) && !x.IsInterface
-                && !x.IsAbstract).Select(Activator.CreateInstance).Cast<IInstaller>().ToList();
+                .Where(x => typeof(IInstaller).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract)
+                .Select(Activator.CreateInstance).Cast<IInstaller>().ToList();
             installers.ForEach(installer => installer.InstallerServices(services, Configuration));
 
-            _ = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            // JWT Authentication
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -54,19 +58,17 @@ namespace Inventory.Infrastructure
                 };
             });
 
-            services.AddMvc();
-
+            // Add MVC services
             services.AddMvc(options => options.EnableEndpointRouting = false);
 
+            // Swagger setup
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = swaggerOptions?.Title, Version = swaggerOptions?.Version });
-                //Next 2 lines will show user parameter value in swagger 
-                //var filePath = Path.Combine(System.AppContext.BaseDirectory, "example.xml");
-                //c.IncludeXmlComments(filePath);
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: 'Bearer 12345abcdef'",
+                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
+                                    Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: 'Bearer 12345abcdef'",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
@@ -86,21 +88,27 @@ namespace Inventory.Infrastructure
                           Array.Empty<string>()
                     }
                 });
-
-
             });
-            services.AddDbContext<ImsDbContext>(opt => { opt.EnableSensitiveDataLogging(); });
-            //services.AddAndConfigSwagger();
-            services.Configure<ConnectionString>(Configuration.GetSection("ConnectionStrings"));
+
+            // DbContext configuration (single call)
+            services.AddDbContext<Imsv2Context>(opt =>
+            {
+                opt.UseSqlServer(Configuration.GetConnectionString("ProjectConnection"));
+                opt.EnableSensitiveDataLogging();  // Enable sensitive logging if required
+            });
+
+            // SmtpSettings configuration
             services.Configure<SmtpSettings>(Configuration.GetSection("SmtpSettings"));
+
+            // Add controllers
             services.AddControllers();
             services.AddEndpointsApiExplorer();
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             UseExceptionHandler(app);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -110,22 +118,32 @@ namespace Inventory.Infrastructure
                 app.UseExceptionHandler("/Error");
             }
 
-            // Setting up the Services for ConnectionHelper Class
-
+            // Set up service locator for ConnectionHelper Class
             AppServicesHelper.Services = app.ApplicationServices;
 
+            // Swagger setup
             SetupSwagger(app);
 
+            // Enable CORS
             app.UseCors("CorsPolicy");
+
+            // Enable static files
             app.UseStaticFiles();
+
+            // Enable Swagger UI
             app.UseSwagger();
-            app.UseStaticFiles();
+
+            // Enable Authentication and Authorization middleware
             app.UseAuthentication();
+            app.UseAuthorization();
+
+            // Enable HTTPS redirection
             app.UseHttpsRedirection();
+
+            // Use MVC routing
             app.UseMvc();
-
-
         }
+
         private static void UseExceptionHandler(IApplicationBuilder app)
         {
             app.UseExceptionHandler(exceptionHandlerApp =>
@@ -147,6 +165,7 @@ namespace Inventory.Infrastructure
                 });
             });
         }
+
         private void SetupSwagger(IApplicationBuilder app)
         {
             app.UseSwagger(option =>

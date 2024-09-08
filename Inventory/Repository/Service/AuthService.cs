@@ -1,18 +1,13 @@
-﻿using Azure;
-using Common_Helper.CommonHelper;
+﻿using Common_Helper.CommonHelper;
 using Dapper;
 using Inventory.AppCode;
-using Inventory.Extensions;
-using Inventory.Models.Entity;
 using Inventory.Models.Request;
 using Inventory.Models.Response;
 using Inventory.Repository.DBContext;
 using Inventory.Repository.IService;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+// ReSharper disable All
 
 namespace Inventory.Repository.Service
 {
@@ -20,18 +15,19 @@ namespace Inventory.Repository.Service
     {
         #region Declaration
         private readonly IDbConnection _dbConnection;
-        private readonly ImsDbContext _dbContext;
+        private readonly Imsv2Context _dbContext;
         bool result = true;
         AuditLog.BeLogLevel _errorlevel = AuditLog.BeLogLevel.Information;
         AuditLog.BeLogType _errortype = AuditLog.BeLogType.Success;
         string? ExceptionMsg = "";
         string? METHODNAME = "";
         string? TableID = "";
-        public AuthService(IConfiguration Configuration)
+       // CommonService _commonService = new CommonService();
+        public AuthService(IConfiguration Configuration,Imsv2Context context)
         {
             ConnectionHelper connectionHelper = new ConnectionHelper(Configuration);
             _dbConnection = connectionHelper.GetDbConnection();
-            _dbContext = connectionHelper.GetDbContext();
+            _dbContext = context;
         }
         private void connectionOpen()
         {
@@ -46,21 +42,40 @@ namespace Inventory.Repository.Service
         #endregion
         public async Task<LoginResponse?> GetLoginDetails(LoginRequest user, AuditLogHelper _auditLogHelper)
         {
-            LoginResponse? LoginResponse = new LoginResponse();
+            var LoginResponse = new LoginResponse();
             METHODNAME = "GetLoginDetails";
             TableID = user.UserName;
             ExceptionMsg = "Successful To Get Login Details";
             try
             {
                 string SqlQuery = LoginSql();
-                var parameters = new { UserName = user.UserName, Password = user.Password };
+                var parameters = new { UserName = user.UserName};
                 LoginResponse = await _dbConnection.QuerySingleOrDefaultAsync<LoginResponse>(SqlQuery, parameters);
+                dynamic? existingUser = null;
+                if (LoginResponse is not null)
+                {
+                    existingUser = await _dbContext.Users
+                        .FirstOrDefaultAsync(u => u.UserId == LoginResponse.UserId);
+                }
+
+                if (existingUser is not null)
+                {
+                    existingUser.LastOtp = "1234";
+                    //existingUser.LastOtpDate = _commonService.GetIndianDatetime();
+                    _dbContext.Users.Update(existingUser);
+                    _dbContext.SaveChanges();
+                }
+                else
+                {
+                    return null;
+                }
+                LoginResponse!.ExpiryTime = DateTimeOffset.UtcNow.AddMinutes(180).ToUnixTimeSeconds();
                 result = true;
             }
             catch (Exception ex)
             {
                 result = false;
-                ExceptionMsg = "Faild To Get Login Details : - " + ex.Message;
+                ExceptionMsg = "Failed To Get Login Details : - " + ex.Message;
                 _errorlevel = AuditLog.BeLogLevel.Error;
                 _errortype = AuditLog.BeLogType.SQL;
             }
@@ -75,30 +90,33 @@ namespace Inventory.Repository.Service
                 throw new ArgumentNullException(nameof(ExceptionMsg));
             }
         }
-        public static string LoginSql()
+
+        private static string LoginSql()
         {
-            string query = " SELECT ISNULL(Email,'')AS Email, ISNULL(CONVERT(VARCHAR(50),UserId),'')AS UserId " +
-                            " FROM [User] Where UserName = @UserName AND Password = @Password ";
+            const string query =
+                "SELECT ISNULL(Login,'') AS LoginId, ISNULL(Email,'') AS EmailId, UserID AS UserId, UserName, UserType AS UserType " +
+                "FROM [dbo].[Users] WHERE Login = @UserName AND InActive = 0";
             return query;
         }
-        public async Task<bool> UpdateRefreshToken(TokenResponse tokenResponse, Guid? UserId, AuditLogHelper _auditLogHelper)
+
+        public async Task<bool> UpdateRefreshToken(TokenResponse tokenResponse, long? UserId, AuditLogHelper _auditLogHelper)
         {
             METHODNAME = "UpdateRefreshToken";
             TableID = UserId.ToString();
             ExceptionMsg = "Successfull To Update Refresh Token";
             try
             {
-                var user = await _dbContext.Users.Where(u => u.UserId == UserId).FirstAsync();
-                user.RefreshToken = tokenResponse.RefreshToken;
-                user.RefreshTokenExpiryDate = DateTime.Now.AddDays(7);
-                user.RefreshTokenStartDate = DateTime.Now;
+                //var user = await _dbContext.Users.Where(u => u.UserId == UserId).FirstAsync();
+                // user.RefreshToken = tokenResponse.RefreshToken;
+                // user.RefreshTokenExpiryDate = DateTime.Now.AddDays(7);
+                // user.RefreshTokenStartDate = DateTime.Now;
                 _dbContext.SaveChanges();
                 result = true;
             }
             catch (Exception ex)
             {
                 result = false;
-                ExceptionMsg = "Faild To Update Refresh Token : - " + ex.Message;
+                ExceptionMsg = "Failed To Update Refresh Token : - " + ex.Message;
                 _errorlevel = AuditLog.BeLogLevel.Error;
                 _errortype = AuditLog.BeLogType.SQL;
             }
@@ -167,7 +185,7 @@ namespace Inventory.Repository.Service
             try
             {
                 var user = await _dbContext.Users.Where(u => u.Email == username).FirstAsync();
-                user.RefreshToken = null;
+                //user.RefreshToken = null;
                 _dbContext.Update(user);
                 _dbContext.SaveChanges();
                 result = true;

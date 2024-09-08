@@ -1,16 +1,10 @@
-﻿using Azure;
-using Common_Helper.CommonHelper;
+﻿using Common_Helper.CommonHelper;
 using Inventory.AppCode;
-using Inventory.Models.Entity;
 using Inventory.Models.Request;
 using Inventory.Models.Response;
 using Inventory.Repository.IService;
-using Inventory.Repository.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.IdentityModel.Tokens;
-using System.Reflection;
 using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -53,25 +47,24 @@ namespace Inventory.Controllers
         public async Task<ActionResult> GetLogin(LoginRequest user)
         {
             if (user.UserName == "") return BadRequest("Please Enter User Name");
-            if (user.Password == "") return BadRequest("Please Enter Password");
             METHODNAME = "GetLogin";
             TableID = user.UserName;
             Response.ErrorDescription = "Successful To Get Login Details";
-            TokenResponse tokenResponse = new TokenResponse();
+            var tokenResponse = new TokenResponse();
             try
             {
                 _auditLogHelper.ClientIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
                 _auditLogHelper.ClientEmail = user.UserName;
-                LoginResponse? loginResponse = await _service.GetLoginDetails(user, _auditLogHelper);
+                var loginResponse = await _service.GetLoginDetails(user, _auditLogHelper);
                 if (loginResponse != null)
                 {
-                    Guid UserId = new System.Guid(loginResponse.UserId);
+                    var UserId = (loginResponse.UserId);
                     #region Claim
                     var claims = new List<Claim>
                     {
-                    new Claim(ClaimTypes.NameIdentifier, loginResponse.UserId),
+                    new Claim(ClaimTypes.NameIdentifier, loginResponse.UserId.ToString()),
                     new Claim(ClaimTypes.Email, loginResponse.Email),
-                    new Claim(ClaimTypes.Name, loginResponse.Email),
+                     new Claim(ClaimTypes.Name, loginResponse.Email),
                     };
                     #endregion
                     tokenResponse.Token = _tokenService.GenerateAccessToken(claims);
@@ -90,7 +83,7 @@ namespace Inventory.Controllers
             catch (Exception ex)
             {
                 result = false;
-                Response.ErrorDescription = "Faild To Get Login Details : - " + ex.Message;
+                Response.ErrorDescription = "Failed To Get Login Details : - " + ex.Message;
             }
             //Audit Helper
             AuditLog.CallLog(_auditLogHelper, _errorlevel, _errortype, METHODNAME, TableID, Response.ErrorDescription);
@@ -110,17 +103,17 @@ namespace Inventory.Controllers
         {
             if (tokenApiModel is null)return BadRequest("Invalid client request");
             
-            TokenResponse tokenResponse = new TokenResponse();
+            var tokenResponse = new TokenResponse();
             METHODNAME = "RefreshToken";
             TableID = "Refresh Token";
-            Response.ErrorDescription = "Successfull To Get Refresh Token";
+            Response.ErrorDescription = "Successful To Get Refresh Token";
             try
             {
                 var principal = _tokenService.GetPrincipalFromExpiredToken(tokenApiModel.AccessToken);
                 var username = principal.Identity?.Name; //this is mapped to the Name claim by default
                 _auditLogHelper.ClientIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
                 _auditLogHelper.ClientEmail = username;
-                Guid? UserId = await _service.GetValidToken(username, tokenApiModel.RefreshToken, _auditLogHelper);
+                dynamic? UserId = await _service.GetValidToken(username, tokenApiModel.RefreshToken, _auditLogHelper);
                 if (UserId == null) return BadRequest("Invalid client request");
                 tokenResponse.Token = _tokenService.GenerateAccessToken(principal.Claims);
                 tokenResponse.RefreshToken = _tokenService.GenerateRefreshToken();
@@ -130,7 +123,7 @@ namespace Inventory.Controllers
             catch (Exception ex)
             {
                 result = false;
-                Response.ErrorDescription = "Faild To Get Refresh Token : - " + ex.Message;
+                Response.ErrorDescription = "Failed To Get Refresh Token : - " + ex.Message;
                 _errorlevel = AuditLog.BeLogLevel.Error;
                 _errortype = AuditLog.BeLogType.SQL;
             }

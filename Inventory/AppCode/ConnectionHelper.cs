@@ -42,11 +42,11 @@ namespace Inventory.AppCode
             }
             return masterconn;
         }
-        public ImsDbContext GetDbContext()
+        public Imsv2Context GetDbContext()
         {
-            var bizBOptionsBuilder = new DbContextOptionsBuilder<ImsDbContext>();
+            var bizBOptionsBuilder = new DbContextOptionsBuilder<Imsv2Context>();
             bizBOptionsBuilder.UseSqlServer(GetMasterConnectionString());
-            return new ImsDbContext(bizBOptionsBuilder.Options);
+            return new Imsv2Context(bizBOptionsBuilder.Options);
         }
 
        

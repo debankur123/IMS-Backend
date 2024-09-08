@@ -20,7 +20,7 @@ namespace Inventory.Repository.Service
     {
         #region Declaration
         private readonly IDbConnection _dbConnection;
-        private readonly ImsDbContext _dbContext;
+        private readonly Imsv2Context _dbContext;
         bool result = true;
         #endregion
         public CommonService(IConfiguration Configuration)
@@ -29,6 +29,12 @@ namespace Inventory.Repository.Service
             _dbConnection = connectionHelper.GetDbConnection();
             _dbContext = connectionHelper.GetDbContext();
         }
+
+        // public CommonService()
+        // {
+        //     throw new NotImplementedException();
+        // }
+
         #region Connection
         private void connectionOpen()
         {
@@ -93,6 +99,12 @@ namespace Inventory.Repository.Service
             {
                 return dt;
             }
+        }
+        public DateTime GetIndianDatetime()
+        {
+            var indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+            var indianDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, indianTimeZone);
+            return indianDateTime;
         }
         
     }
