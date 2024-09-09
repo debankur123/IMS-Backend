@@ -61,7 +61,7 @@ namespace Inventory.Repository.Service
                 if (existingUser is not null)
                 {
                     existingUser.LastOtp = "1234";
-                    //existingUser.LastOtpDate = _commonService.GetIndianDatetime();
+                    existingUser.LastOtpDate = DateTime.UtcNow;
                     _dbContext.Users.Update(existingUser);
                     _dbContext.SaveChanges();
                 }
@@ -70,6 +70,7 @@ namespace Inventory.Repository.Service
                     return null;
                 }
                 LoginResponse!.ExpiryTime = DateTimeOffset.UtcNow.AddMinutes(180).ToUnixTimeSeconds();
+                LoginResponse!.Otp = existingUser.LastOtp;
                 result = true;
             }
             catch (Exception ex)

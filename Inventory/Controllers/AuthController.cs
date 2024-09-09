@@ -62,13 +62,20 @@ namespace Inventory.Controllers
                     #region Claim
                     var claims = new List<Claim>
                     {
-                    new Claim(ClaimTypes.NameIdentifier, loginResponse.UserId.ToString()),
-                    new Claim(ClaimTypes.Email, loginResponse.Email),
-                     new Claim(ClaimTypes.Name, loginResponse.Email),
+                        new Claim(ClaimTypes.NameIdentifier, loginResponse.UserId.ToString()),
+                        new Claim(ClaimTypes.Email, loginResponse.Email == null ? "": loginResponse.Email),
+                        new Claim(ClaimTypes.Name,  loginResponse.Email == null ? "" : loginResponse.Email),
+                        new Claim(ClaimTypes.Role,  loginResponse.Role ?? "")
                     };
                     #endregion
                     tokenResponse.Token = _tokenService.GenerateAccessToken(claims);
                     tokenResponse.RefreshToken = _tokenService.GenerateRefreshToken();
+                    tokenResponse.UserName = loginResponse.UserName;
+                    tokenResponse.UserMail = loginResponse.Email;
+                    tokenResponse.UserId = loginResponse.UserId;
+                    tokenResponse.Role = loginResponse.Role;
+                    tokenResponse.Otp = loginResponse.Otp;
+                    tokenResponse.ExpiryTime = loginResponse.ExpiryTime;
                     _ = await _service.UpdateRefreshToken(tokenResponse, UserId, _auditLogHelper);
                     Response.Response = tokenResponse;
                 }

@@ -2,6 +2,7 @@
 using Inventory.AppCode.Helper;
 using Inventory.Repository.IService;
 using Inventory.Repository.Service;
+using InventoryAPI.Repository;
 
 namespace Inventory.Infrastructure.ServicesInstaller
 {
@@ -18,7 +19,8 @@ namespace Inventory.Infrastructure.ServicesInstaller
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IMailHelper, MailHelper>();
             services.AddScoped<ISessionHelper, SessionHelper>();
-            
+            services.AddScoped<IMasterRepository, MasterRepository>();
+
         }
     }
 }

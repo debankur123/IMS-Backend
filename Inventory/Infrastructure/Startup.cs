@@ -16,7 +16,7 @@ namespace Inventory.Infrastructure
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
         private readonly ISwaggerProviderOptions? swaggerOptions;
 
         public Startup(IConfiguration configuration)
