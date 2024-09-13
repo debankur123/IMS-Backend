@@ -15,4 +15,24 @@ public interface IMasterRepository
     Task<List<Ims_M_Area>> GetArea(int id);
     Task<List<Ims_M_BindGridViewItem>> BindGridViewItem();
     decimal InsertUpdateItemDetails(Ims_M_ItemDetailsRequest itemDetail);
+    decimal InsertUpdateItemMaintain(Ims_M_ItemMaintain_Request itemMaintain);
+    DataSet BindGridService();
+    DataSet BindGridAMCMain();
+    DataSet GetDataMaintain(long itemDetailId);
+    DataSet GetDataService(long itemDetailId);
+    DataSet SetDataItem(long itemId);
+    DataSet SearchGridBind(Ims_M_SearchGridBind obj);
+    DataSet SearchGridBindMain(long itemId, long companyId);
+
+    #region Are/Department
+    DataSet BindGridArea();
+    DataSet gridbindAreaSearch(string areaName);
+    decimal InsertUpdateArea(Ims_M_Area_Request obj);
+    #endregion
+
+    #region Unit Location/Lab
+    DataSet BindgridLocation();
+    DataSet gridbindLocationSearch(string locationName);
+    decimal InsertUpdateLocation(Ims_M_Location_Request obj);
+    #endregion
 }
