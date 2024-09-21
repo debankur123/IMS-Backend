@@ -35,4 +35,11 @@ public interface IMasterRepository
     DataSet gridbindLocationSearch(string locationName);
     decimal InsertUpdateLocation(Ims_M_Location_Request obj);
     #endregion
+
+    #region JobType/Job
+    DataSet GridBindJob();
+    DataSet GetJob(long jobId);
+    DataSet GridBindJobSearch(string jobName,long companyId);
+    long InsertUpdateJobType(Ims_M_Job_Request obj);
+    #endregion
 }

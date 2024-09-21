@@ -466,5 +466,66 @@ namespace InventoryAPI.Repository
             return result;
         }
         #endregion
+        #region Jobtype/Job
+        public DataSet GridBindJob()
+        {
+            var ds = new DataSet();
+            using var conn = new SqlConnection(_connectionString);
+            var cmd = new SqlCommand("Usp_GridBindJob", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            var adapter = new SqlDataAdapter(cmd);
+            adapter.Fill(ds);
+            return ds;
+        }
+        public DataSet GetJob(long jobId){
+            var ds = new DataSet();
+            using var conn = new SqlConnection(_connectionString);
+            var cmd = new SqlCommand("Usp_GetDataJob", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.Parameters.AddWithValue("@JobID", jobId);
+            var adapter = new SqlDataAdapter(cmd);
+            adapter.Fill(ds);
+            return ds;
+        }
+        public DataSet GridBindJobSearch(string? jobName=null,long companyId=0){
+            var ds = new DataSet();
+            using var conn = new SqlConnection(_connectionString);
+            var cmd = new SqlCommand("Usp_GetDataJobSearch", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.Parameters.AddWithValue("@JobName", jobName);
+            cmd.Parameters.AddWithValue("@CompanyID", companyId);
+            var adapter = new SqlDataAdapter(cmd);
+            adapter.Fill(ds);
+            return ds;
+        }
+        public long InsertUpdateJobType(Ims_M_Job_Request request){
+            using SqlConnection conn = new(_connectionString);
+            using SqlCommand cmd = new("[dbo].[Usp_JobInsertUpdate]", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.Parameters.AddWithValue("@JobTypeID", request.JobTypeId);
+            cmd.Parameters.AddWithValue("@JobID", request.JobId);
+            cmd.Parameters.AddWithValue("@JobName", request.JobName ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@JobNmaedescr", request.JobNameDesc ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@CompanyID", request.CompanyId);
+            cmd.Parameters.AddWithValue("@CreatedUID", request.CreatedUID);
+            SqlParameter outputId = new("@OutPutId", SqlDbType.BigInt)
+            {
+                Direction = ParameterDirection.Output
+            };
+            cmd.Parameters.Add(outputId);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            long result = Convert.ToInt64(outputId.Value);
+            return result;
+        }
+        #endregion
     }
 }

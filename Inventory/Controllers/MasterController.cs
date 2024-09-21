@@ -285,19 +285,17 @@ public class MasterController : ControllerBase
             return BadRequest("Invalid data.");
         try
         {
-            decimal result = _masterRepository.InsertUpdateArea(model);
-            if (result == -7)
-                return Conflict("Area with the same name already exists.");
-            else if (result == -1)
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing the request.");
-            else
-                return Ok(new
+            var result = _masterRepository.InsertUpdateArea(model);
+            return result switch
+            {
+                -7 => Conflict("Area with the same name already exists."),
+                -1 => StatusCode(StatusCodes.Status500InternalServerError,
+                    "An error occurred while processing the request."),
+                _ => Ok(new
                 {
-                    StatusMsg = "1",
-                    HasError = "No",
-                    Message = "Request processed successfully!",
-                    Output = result
-                });
+                    StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result
+                })
+            };
         }
         catch (Exception ex)
         {
@@ -333,26 +331,76 @@ public class MasterController : ControllerBase
     {
         try
         {
-            decimal result = _masterRepository.InsertUpdateLocation(request);
-            if (result == -1)
+            var result = _masterRepository.InsertUpdateLocation(request);
+            return result switch
             {
-                return StatusCode(500, "An error occurred during the transaction.");
-            }
-            if (result == -7)
-            {
-                return Conflict("Duplicate Location found for the given Area.");
-            }
-            return Ok(new
-            {
-                StatusMsg = "1",
-                HasError = "No",
-                Message = "Request processed successfully!",
-                Output = result
-            });
+                -1 => StatusCode(500, "An error occurred during the transaction."),
+                -7 => Conflict("Duplicate Location found for the given Area."),
+                _ => Ok(new
+                {
+                    StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result
+                })
+            };
         }
         catch (Exception ex)
         {
             throw new Exception(ex.Message);
         }
     }
+    #region JobType/Job
+    [HttpGet]
+    [Route("GridBindJob")]
+    public ActionResult GridBindJob()
+    {
+        var ds = _masterRepository.GridBindJob();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+    [HttpGet]
+    [Route("GetJob")]
+    public ActionResult GetJob(long jobId)
+    {
+        var ds = _masterRepository.GetJob(jobId);
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+    [HttpGet]
+    [Route("GridBindJobSearch")]
+    public ActionResult GridBindJobSearch(string? jobName=null,long companyId=0)
+    {
+        var ds = _masterRepository.GridBindJobSearch(jobName!,companyId);
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+    [HttpPost("InsertUpdateJob")]
+    public IActionResult InsertUpdateJob([FromBody] Ims_M_Job_Request request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var result = _masterRepository.InsertUpdateJobType(request);
+        if (result == -1)
+        {
+            return StatusCode(500, "An error occurred during the transaction.");
+        }
+        else if (result == -7)
+        {
+            return Conflict("A job with the same name already exists.");
+        }
+        return Ok(new { StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result });
+    }
+    #endregion
 }
