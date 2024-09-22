@@ -391,7 +391,7 @@ public class MasterController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        var result = _masterRepository.InsertUpdateJobType(request);
+        var result = _masterRepository.InsertUpdateJob(request);
         if (result == -1)
         {
             return StatusCode(500, "An error occurred during the transaction.");
@@ -399,7 +399,152 @@ public class MasterController : ControllerBase
         else if (result == -7)
         {
             return Conflict("A job with the same name already exists.");
+        } 
+        return Ok(new { StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result });
+    }
+    #endregion
+
+    #region ItemGroup
+    [HttpGet]
+    [Route("GridBindItemGroup")]
+    public ActionResult GridBindItemGroup()
+    {
+        var ds = _masterRepository.GridBindItemGroup();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
+        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+    [HttpGet]
+    [Route("GridBindItemGroupNameSearch")]
+    public ActionResult GridBindItemGroupNameSearch(string search)
+    {
+        var ds = _masterRepository.GridBindItemGroupNameSearch(search);
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+    [HttpPost("InsertUpdateItemGroup")]
+    public IActionResult InsertUpdateItemGroup([FromBody] Ims_M_ItemGroup_Request request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var result = _masterRepository.InsertUpdateItemGroup(request);
+        if (result == -1)
+        {
+            return StatusCode(500, "An error occurred during the transaction.");
+        }
+        else if (result == -7)
+        {
+            return Conflict("An item group with the same name already exists.");
+        } 
+        return Ok(new { StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result });
+    }
+    #endregion
+    #region ItemSubGroup
+    [HttpGet]
+    [Route("GridBindItemSubGroup")]
+    public ActionResult GridBindItemSubGroup()
+    {
+        var ds = _masterRepository.GridBindItemSubGroup();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+    [HttpGet]
+    [Route("GridBindItemSubGroupNameSearch")]
+    public ActionResult GridBindItemSubGroupNameSearch(string itemSubGroupName)
+    {
+        var ds = _masterRepository.GridBindItemSubGroupNameSearch(itemSubGroupName);
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+    [HttpPost("InsertUpdateItemSubGroup")]
+    public IActionResult InsertUpdateItemSubGroup([FromBody] Ims_M_ItemSubGroup_Request request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var result = _masterRepository.InsertUpdateItemSubGroup(request);
+        if (result == -1)
+        {
+            return StatusCode(500, "An error occurred during the transaction.");
+        }
+        else if (result == -7)
+        {
+            return Conflict("An item sub group with the same name already exists.");
+        } 
+        return Ok(new { StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result });
+    }
+    #endregion
+    #region Bank
+    [HttpGet]
+    [Route("GridBindBank")]
+    public ActionResult GridBindBank()
+    {
+        var ds = _masterRepository.GridBindBank();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+    [HttpGet]
+    [Route("GetBank")]
+    public ActionResult GetBank(long bankId)
+    {
+        var ds = _masterRepository.GetBank(bankId);
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+    [HttpGet]
+    [Route("GridBindBankSearch")]
+    public ActionResult GridBindBankSearch(string? bankName=null)
+    {
+        var ds = _masterRepository.GridBindBankSearch(bankName!);
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+    [HttpPost("InsertUpdateBank")]
+    public IActionResult InsertUpdateBank([FromBody] Ims_M_Bank_Request request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var result = _masterRepository.InsertOrUpdateBank(request);
+        if (result == -1)
+        {
+            return StatusCode(500, "An error occurred during the transaction.");
+        }
+        else if (result == -7)
+        {
+            return Conflict("bank with the same name already exists.");
+        } 
         return Ok(new { StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result });
     }
     #endregion

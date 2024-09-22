@@ -40,6 +40,25 @@ public interface IMasterRepository
     DataSet GridBindJob();
     DataSet GetJob(long jobId);
     DataSet GridBindJobSearch(string jobName,long companyId);
-    long InsertUpdateJobType(Ims_M_Job_Request obj);
+    long InsertUpdateJob(Ims_M_Job_Request obj);
+    #endregion
+
+    #region ItemGroup
+    DataSet GridBindItemGroup();
+    DataSet GridBindItemGroupNameSearch(string itemGroupName);
+    long InsertUpdateItemGroup(Ims_M_ItemGroup_Request obj);
+    #endregion
+
+    #region ItemSubGroup
+    DataSet GridBindItemSubGroup();
+    DataSet GridBindItemSubGroupNameSearch(string itemSubGroupName);
+    long InsertUpdateItemSubGroup(Ims_M_ItemSubGroup_Request obj);
+    #endregion
+
+    #region Bank
+    DataSet GridBindBank();
+    DataSet GetBank(long bankId);
+    DataSet GridBindBankSearch(string bankName);
+    long InsertOrUpdateBank(Ims_M_Bank_Request request);
     #endregion
 }

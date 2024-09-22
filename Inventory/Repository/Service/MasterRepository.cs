@@ -479,7 +479,8 @@ namespace InventoryAPI.Repository
             adapter.Fill(ds);
             return ds;
         }
-        public DataSet GetJob(long jobId){
+        public DataSet GetJob(long jobId)
+        {
             var ds = new DataSet();
             using var conn = new SqlConnection(_connectionString);
             var cmd = new SqlCommand("Usp_GetDataJob", conn)
@@ -491,7 +492,8 @@ namespace InventoryAPI.Repository
             adapter.Fill(ds);
             return ds;
         }
-        public DataSet GridBindJobSearch(string? jobName=null,long companyId=0){
+        public DataSet GridBindJobSearch(string? jobName = null, long companyId = 0)
+        {
             var ds = new DataSet();
             using var conn = new SqlConnection(_connectionString);
             var cmd = new SqlCommand("Usp_GetDataJobSearch", conn)
@@ -504,7 +506,8 @@ namespace InventoryAPI.Repository
             adapter.Fill(ds);
             return ds;
         }
-        public long InsertUpdateJobType(Ims_M_Job_Request request){
+        public long InsertUpdateJob(Ims_M_Job_Request request)
+        {
             using SqlConnection conn = new(_connectionString);
             using SqlCommand cmd = new("[dbo].[Usp_JobInsertUpdate]", conn)
             {
@@ -527,5 +530,229 @@ namespace InventoryAPI.Repository
             return result;
         }
         #endregion
+
+        #region ItemGroup
+        public DataSet GridBindItemGroup()
+        {
+            var ds = new DataSet();
+            var conn = new SqlConnection(_connectionString);
+            var cmd = new SqlCommand("[dbo].[Usp_GridItemGroup]", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            var adapter = new SqlDataAdapter(cmd);
+            adapter.Fill(ds);
+            return ds;
+        }
+        public DataSet GridBindItemGroupNameSearch(string itemGroupName)
+        {
+            var ds = new DataSet();
+            var conn = new SqlConnection(_connectionString);
+            var cmd = new SqlCommand("[dbo].[Usp_GetDataItemGroupSearch]", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.Parameters.AddWithValue("@ItemGroupName", itemGroupName);
+            var adapter = new SqlDataAdapter(cmd);
+            adapter.Fill(ds);
+            return ds;
+        }
+
+        public long InsertUpdateItemGroup(Ims_M_ItemGroup_Request obj)
+        {
+            var connection = new SqlConnection(_connectionString);
+            try
+            {
+                SqlCommand cmd = new("[dbo].[Usp_ItemGroupInsertUpdate]", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.Add(new SqlParameter("@ItemGroupID", obj.ItemGroupId));
+                cmd.Parameters.Add(new SqlParameter("@ItemGroupName",
+                    obj.ItemGroupName != null ? obj.ItemGroupName : DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@SetGroupName",
+                    obj.SetGroupName != null ? obj.SetGroupName : DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@CompanyID",
+                    obj.CompanyId.HasValue ? obj.CompanyId.Value : DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@CreatedUID",
+                    obj.CreatedUId.HasValue ? obj.CreatedUId.Value : DBNull.Value));
+                SqlParameter OutPutId = new("@OutPutId", SqlDbType.BigInt)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(OutPutId);
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                long result = Convert.ToInt64(OutPutId.Value);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while inserting/updating the item group.", ex);
+            }
+        }
+        #endregion
+
+        #region ItemSubGroup
+        public DataSet GridBindItemSubGroup()
+        {
+            try
+            {
+                var ds = new DataSet();
+                var conn = new SqlConnection(_connectionString);
+                var cmd = new SqlCommand("[dbo].[Usp_GridItemSubGroup]", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                var adapter = new SqlDataAdapter(cmd);
+                adapter.Fill(ds);
+                return ds;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+        public DataSet GridBindItemSubGroupNameSearch(string itemSubGroupName)
+        {
+            try
+            {
+                var ds = new DataSet();
+                var conn = new SqlConnection(_connectionString);
+                var cmd = new SqlCommand("[dbo].[Usp_GetDataItemSubGroupSearch]", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.AddWithValue("@ItemSubGroupName", itemSubGroupName);
+                var adapter = new SqlDataAdapter(cmd);
+                adapter.Fill(ds);
+                return ds;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public long InsertUpdateItemSubGroup(Ims_M_ItemSubGroup_Request obj)
+        {
+            var connection = new SqlConnection(_connectionString);
+            try
+            {
+                SqlCommand cmd = new("[dbo].[Usp_ItemSubGroupInsertUpdate]", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.Add(new SqlParameter("@ItemGroupID", obj.ItemGroupId));
+                cmd.Parameters.Add(new SqlParameter("@ItemSubGroupID", obj.ItemSubGroupId));
+                cmd.Parameters.Add(new SqlParameter("@ItemSubGroupName",
+                    obj.ItemSubGroupName != null ? obj.ItemSubGroupName : DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@SetSubGroupName",
+                    obj.SetSubGroupName != null ? obj.SetSubGroupName : DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@CompanyID",
+                    obj.CompanyId.HasValue ? obj.CompanyId.Value : DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@CreatedUID",
+                    obj.CreatedUId.HasValue ? obj.CreatedUId.Value : DBNull.Value));
+                SqlParameter OutPutId = new("@OutPutId", SqlDbType.BigInt)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(OutPutId);
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                long result = Convert.ToInt64(OutPutId.Value);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while inserting/updating the item sub group.", ex);
+            }
+        }
+        #endregion
+
+        #region Bank
+        public DataSet GridBindBank()
+        {
+            try
+            {
+                var ds = new DataSet();
+                var conn = new SqlConnection(_connectionString);
+                var cmd = new SqlCommand("[dbo].[Usp_GridBindBank]", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                var adapter = new SqlDataAdapter(cmd);
+                adapter.Fill(ds);
+                return ds;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+        public DataSet GetBank(long bankId){
+            try
+            {
+                var ds = new DataSet();
+                var conn = new SqlConnection(_connectionString);
+                var cmd = new SqlCommand("[dbo].[Usp_GetDatabank]", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.AddWithValue("@BankID",bankId);
+                var adapter = new SqlDataAdapter(cmd);
+                adapter.Fill(ds);
+                return ds;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+        public DataSet GridBindBankSearch(string bankName)
+        {
+            try
+            {
+                var ds = new DataSet();
+                var conn = new SqlConnection(_connectionString);
+                var cmd = new SqlCommand("[dbo].[Usp_GetDatabankSearch]", conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.AddWithValue("@BankName", bankName);
+                var adapter = new SqlDataAdapter(cmd);
+                adapter.Fill(ds);
+                return ds;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public long InsertOrUpdateBank(Ims_M_Bank_Request obj){
+            var connection = new SqlConnection(_connectionString);
+            try
+            {
+                SqlCommand cmd = new("[dbo].[Usp_BankInsertUpdate]", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.Add(new SqlParameter("@BankID", obj.BankId));
+                cmd.Parameters.Add(new SqlParameter("@BankName",
+                    obj.BankName != null ? obj.BankName : DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@BaranchName",
+                    obj.BranchName != null ? obj.BranchName : DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@Address",
+                    obj.Address != null ? obj.Address : DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@Ifsc_Code",
+                    obj.IFSCCode != null ? obj.IFSCCode : DBNull.Value));
+                SqlParameter OutPutId = new("@OutPutId", SqlDbType.BigInt)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(OutPutId);
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                long result = Convert.ToInt64(OutPutId.Value);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while inserting/updating bank details.", ex);
+            }
+        }
+        
+        #endregion
     }
 }
+
