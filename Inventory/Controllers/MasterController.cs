@@ -46,7 +46,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
 
@@ -67,7 +67,7 @@ public class MasterController : ControllerBase
     {
         var ds = _masterRepository.SearchUOM(uomName);
         if (ds.Tables[0].Rows.Count <= 0) return NotFound("No matching UOM records found.");
-        var uomData = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var uomData = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(uomData);
     }
 
@@ -191,7 +191,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpGet]
@@ -203,7 +203,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpGet]
@@ -215,7 +215,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpGet]
@@ -227,7 +227,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpGet]
@@ -239,7 +239,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpPost]
@@ -251,7 +251,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpPost]
@@ -263,7 +263,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpGet]
@@ -275,7 +275,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpPost("InsertUpdateArea")]
@@ -311,7 +311,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpGet]
@@ -323,7 +323,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpPost("InsertUpdateLocation")]
@@ -357,7 +357,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpGet]
@@ -369,7 +369,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpGet]
@@ -381,7 +381,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpPost("InsertUpdateJob")]
@@ -414,7 +414,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpGet]
@@ -426,7 +426,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpPost("InsertUpdateItemGroup")]
@@ -458,7 +458,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpGet]
@@ -470,7 +470,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpPost("InsertUpdateItemSubGroup")]
@@ -502,7 +502,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpGet]
@@ -514,7 +514,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpGet]
@@ -526,7 +526,7 @@ public class MasterController : ControllerBase
         {
             return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
         }
-        var output = service.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(output);
     }
     [HttpPost("InsertUpdateBank")]
@@ -537,15 +537,15 @@ public class MasterController : ControllerBase
             return BadRequest(ModelState);
         }
         var result = _masterRepository.InsertOrUpdateBank(request);
-        if (result == -1)
+        return result switch
         {
-            return StatusCode(500, "An error occurred during the transaction.");
-        }
-        else if (result == -7)
-        {
-            return Conflict("bank with the same name already exists.");
-        } 
-        return Ok(new { StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result });
+            -1 => StatusCode(500, "An error occurred during the transaction."),
+            -7 => Conflict("bank with the same name already exists."),
+            _ => Ok(new
+            {
+                StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result
+            })
+        };
     }
     #endregion
 }

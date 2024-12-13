@@ -1,18 +1,8 @@
-﻿using Inventory.Models.Entity;
-using Inventory.Repository.DBContext;
-using Inventory.Repository.IService;
+﻿using Inventory.Repository.DBContext;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
-using System;
 using Inventory.AppCode;
-using Inventory.Extensions;
-using Microsoft.Extensions.Options;
 using System.Data;
-using System.Data.Common;
 using Dapper;
-using System.Drawing;
-using System.Runtime.InteropServices.JavaScript;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Inventory.Repository.Service
 {
@@ -78,11 +68,11 @@ namespace Inventory.Repository.Service
         }
         public async Task<DataTable> GetTable(string TableName)
         {
-            DataTable dt = new DataTable();
+            DataTable dt = new();
             try
             {
                 connectionOpen();
-                var ObjParm = new { TableName = TableName };
+                var ObjParm = new { TableName };
                 dt.Load(await _dbConnection.ExecuteReaderAsync("storedProcedureName", ObjParm, commandType: CommandType.StoredProcedure));
             }
             catch (Exception)

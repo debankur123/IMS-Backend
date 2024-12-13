@@ -24,7 +24,7 @@ public interface IMasterRepository
     DataSet SearchGridBind(Ims_M_SearchGridBind obj);
     DataSet SearchGridBindMain(long itemId, long companyId);
 
-    #region Are/Department
+    #region Area/Department
     DataSet BindGridArea();
     DataSet gridbindAreaSearch(string areaName);
     decimal InsertUpdateArea(Ims_M_Area_Request obj);

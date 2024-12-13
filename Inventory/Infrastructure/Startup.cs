@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Inventory.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Inventory.Repository.IService;
+using Inventory.Repository.Service;
 
 namespace Inventory.Infrastructure
 {
@@ -96,7 +98,8 @@ namespace Inventory.Infrastructure
                 opt.UseSqlServer(Configuration.GetConnectionString("ProjectConnection"));
                 opt.EnableSensitiveDataLogging();  // Enable sensitive logging if required
             });
-
+            // Added services for DI
+            services.AddScoped<IRequisitionRepository, RequisitionRepository>();
             // SmtpSettings configuration
             services.Configure<SmtpSettings>(Configuration.GetSection("SmtpSettings"));
 

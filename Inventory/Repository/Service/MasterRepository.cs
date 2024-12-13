@@ -23,7 +23,6 @@ namespace InventoryAPI.Repository
             _connectionString = configuration.GetConnectionString("ProjectConnection");
             _context = context;
         }
-
         public DataSet GetUOMs()
         {
             var ds = new DataSet();
@@ -140,7 +139,7 @@ namespace InventoryAPI.Repository
         {
             var areas = new List<Ims_M_Area>
             {
-                new Ims_M_Area { AreaID = 0, AreaName = "--Select--" }
+                new() { AreaID = 0, AreaName = "--Select--" }
             };
             var areaList = await _context.Areas
                 .Where(x => x.UnitId == unitId)
@@ -153,7 +152,6 @@ namespace InventoryAPI.Repository
             areas.AddRange(areaList);
             return areas;
         }
-
 
         public async Task<List<Ims_M_BindGridViewItem>> BindGridViewItem()
         {
