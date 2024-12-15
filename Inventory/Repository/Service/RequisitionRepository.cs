@@ -199,6 +199,145 @@ public class RequisitionRepository : IRequisitionRepository
         return result;
     }
 
+    public async Task<DataSet> _GetRequisitionSearchList([FromBody] Ims_Requisition_ReqSearchList_Reponse _params)
+    {
+        var ds = new DataSet();
+        try
+        {
+            using var conn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand("[dbo].[Usp_RequisitionSearchList]", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            cmd.Parameters.Add(new SqlParameter("@StartDate", SqlDbType.DateTime) { Value = _params.StartDate });
+            cmd.Parameters.Add(new SqlParameter("@EndDate", SqlDbType.DateTime) { Value = _params.EndDate });
+            cmd.Parameters.AddWithValue("@UnitID", _params.UnitId);
+            cmd.Parameters.AddWithValue("@ApprovalStatus", _params.ApprovalStatus);
+            cmd.Parameters.AddWithValue("@ReqNo", _params.ReqNo);
+            cmd.Parameters.AddWithValue("@CompanyID", _params.CompanyId);
+            cmd.Parameters.Add(new SqlParameter("@RequisitionType", SqlDbType.VarChar) { Value = _params.ReqType });
+            cmd.Parameters.AddWithValue("@SearchStat", _params.SearchStat);
+            cmd.Parameters.AddWithValue("@ReqID", _params.ReqId);
+            cmd.Parameters.AddWithValue("@SbuType", _params.SBUType);
+            cmd.Parameters.AddWithValue("@Layer", _params.Layer);
+            cmd.Parameters.AddWithValue("@CreatedUID", _params.CreatedUID);
+            var adapter = new SqlDataAdapter(cmd);
+            await conn.OpenAsync();
+            await Task.Run(() => adapter.Fill(ds));
+        }
+        catch (SqlException sqlEx)
+        {
+            throw new Exception("SQL error occurred while fetching the requisition search list.", sqlEx);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while fetching the requisition search list.", ex);
+        }
+        return ds;
+    }
+
+    public async Task<DataSet> GetRequisitionSearchList([FromBody] Ims_Requisition_ReqSearchList_Reponse _params)
+    {
+        var ds = new DataSet();
+        try
+        {
+            using var conn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand("[dbo].[Usp_RequisitionSearchList]", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            // Handling DateTime? for StartDate and EndDate
+            cmd.Parameters.Add(new SqlParameter("@StartDate", SqlDbType.VarChar)
+            {
+                Value = _params.StartDate?.ToString("yyyy-MM-dd") ?? (object)DBNull.Value
+            });
+
+            cmd.Parameters.Add(new SqlParameter("@EndDate", SqlDbType.VarChar)
+            {
+                Value = _params.EndDate?.ToString("yyyy-MM-dd") ?? (object)DBNull.Value
+            });
+
+            // Handling nullable long for UnitID
+            cmd.Parameters.Add(new SqlParameter("@UnitID", SqlDbType.BigInt)
+            {
+                Value = _params.UnitId ?? (object)DBNull.Value
+            });
+
+            // Handling string-based parameters
+            cmd.Parameters.Add(new SqlParameter("@ApprovalStatus", SqlDbType.VarChar)
+            {
+                Value = string.IsNullOrEmpty(_params.ApprovalStatus) ? DBNull.Value : _params.ApprovalStatus
+            });
+
+            cmd.Parameters.Add(new SqlParameter("@ReqNo", SqlDbType.VarChar)
+            {
+                Value = string.IsNullOrEmpty(_params.ReqNo) ? DBNull.Value : _params.ReqNo
+            });
+
+            // Handling nullable long for CompanyID
+            cmd.Parameters.Add(new SqlParameter("@CompanyID", SqlDbType.BigInt)
+            {
+                Value = _params.CompanyId == 0 ? DBNull.Value : (object)_params.CompanyId
+            });
+
+            // Handling string-based RequisitionType
+            cmd.Parameters.Add(new SqlParameter("@RequisitionType", SqlDbType.VarChar)
+            {
+                Value = string.IsNullOrEmpty(_params.ReqType) ? DBNull.Value : _params.ReqType
+            });
+
+            // Handling string-based SearchStat
+            cmd.Parameters.Add(new SqlParameter("@SearchStat", SqlDbType.VarChar)
+            {
+                Value = string.IsNullOrEmpty(_params.SearchStat) ? DBNull.Value : _params.SearchStat
+            });
+
+            // Handling nullable long for ReqID
+            cmd.Parameters.Add(new SqlParameter("@ReqID", SqlDbType.BigInt)
+            {
+                Value = _params.ReqId ?? (object)DBNull.Value
+            });
+
+            // Handling string-based SbuType
+            cmd.Parameters.Add(new SqlParameter("@SbuType", SqlDbType.VarChar)
+            {
+                Value = string.IsNullOrEmpty(_params.SBUType) ? DBNull.Value : _params.SBUType
+            });
+
+            // Handling nullable int for Layer
+            cmd.Parameters.Add(new SqlParameter("@Layer", SqlDbType.Int)
+            {
+                Value = _params.Layer ?? (object)DBNull.Value
+            });
+
+            // Handling nullable long for CreatedUID
+            cmd.Parameters.Add(new SqlParameter("@CreatedUID", SqlDbType.BigInt)
+            {
+                Value = _params.CreatedUID == 0 ? DBNull.Value : (object)_params.CreatedUID
+            });
+
+            var adapter = new SqlDataAdapter(cmd);
+            await conn.OpenAsync();
+            await Task.Run(() => adapter.Fill(ds));
+        }
+        catch (SqlException sqlEx)
+        {
+            // Log detailed SQL error for debugging
+            Console.Error.WriteLine($"SQL Error: {sqlEx.Message}");
+            throw new Exception("SQL error occurred while fetching the requisition search list.", sqlEx);
+        }
+        catch (Exception ex)
+        {
+            // Log general errors
+            Console.Error.WriteLine($"General Error: {ex.Message}");
+            throw new Exception("An error occurred while fetching the requisition search list.", ex);
+        }
+        return ds;
+    }
+
+
+
 
 
 
@@ -219,41 +358,7 @@ public class RequisitionRepository : IRequisitionRepository
         return ds;
     }
 
-    public async Task<DataSet> GetRequisitionSearchList([FromBody] Ims_Requisition_ReqSearchList_Reponse _params)
-    {
-        var ds = new DataSet();
-        try
-        {
-            using var conn = new SqlConnection(_connectionString);
-            using var cmd = new SqlCommand("[dbo].[Usp_ReqSearchListReq]", conn)
-            {
-                CommandType = CommandType.StoredProcedure
-            };
-            cmd.Parameters.Add(new SqlParameter("@StartDate", SqlDbType.DateTime) { Value = _params.StartDate });
-            cmd.Parameters.Add(new SqlParameter("@EndDate", SqlDbType.DateTime) { Value = _params.EndDate });
-            cmd.Parameters.AddWithValue("@UnitID", _params.UnitId);
-            cmd.Parameters.AddWithValue("@ApprovalStatus", _params.ApprovalStatus);
-            cmd.Parameters.AddWithValue("@ReqNo", _params.ReqNo);
-            cmd.Parameters.AddWithValue("@CompanyID", _params.CompanyId);
-            cmd.Parameters.Add(new SqlParameter("@RequisitionType", SqlDbType.VarChar) { Value = _params.ReqType });
-            cmd.Parameters.AddWithValue("@SearchStat", _params.SearchStat);
-            cmd.Parameters.AddWithValue("@ReqID", _params.ReqId);
-            cmd.Parameters.AddWithValue("@SbuType", _params.SBUType);
-            cmd.Parameters.AddWithValue("@Layer", _params.Layer);
-            var adapter = new SqlDataAdapter(cmd);
-            await conn.OpenAsync();
-            await Task.Run(() => adapter.Fill(ds));
-        }
-        catch (SqlException sqlEx)
-        {
-            throw new Exception("SQL error occurred while fetching the requisition search list.", sqlEx);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("An error occurred while fetching the requisition search list.", ex);
-        }
-        return ds;
-    }
+    
 
     
 

@@ -8,6 +8,7 @@ public interface IRequisitionRepository
     AreaList GetRequisitionUnitAreaDetails(long unitId, long companyId);
     Task<DataSet> GetRequisitionUnitAreaLocationDetails(long unitId, long areaId);
     Task<long> InsertRequisitionDetails(Ims_Requisition_Model _params);
+    Task<DataSet> GetRequisitionSearchList(Ims_Requisition_ReqSearchList_Reponse _params);
 
 
 
@@ -15,7 +16,7 @@ public interface IRequisitionRepository
     long InsertUpdateArea(Ims_Requisition_AreaRequest _params);
     
     Task<DataSet> GetRemarks(long reqId);
-    Task<DataSet> GetRequisitionSearchList(Ims_Requisition_ReqSearchList_Reponse _params);
+    
     Task<long> InsertOrUpdateUnitLOcation(Ims_Requisition_UnitLocation_Request _params);
 
     #region Requisition List
