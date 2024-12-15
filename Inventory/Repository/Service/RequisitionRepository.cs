@@ -16,7 +16,42 @@ public class RequisitionRepository : IRequisitionRepository
         _connectionString = configuration.GetConnectionString("ProjectConnection");
         _context = context;
     }
-    public AreaList GetArea(long unitId, long companyId)
+    public UnitList GetRequisitionUnitDetails(string type, long userID)
+    {
+        UnitList response = new(){ UnitDetailsList = [] };
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            try
+            {
+                using SqlCommand cmd = new("[dbo].[Usp_GetUnit12]", connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@type", type);
+                cmd.Parameters.AddWithValue("@uid", userID);
+                SqlDataAdapter adapter = new(cmd);
+                DataSet dataSet = new();
+                connection.Open();
+                adapter.Fill(dataSet);
+                if (dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow row in dataSet.Tables[0].Rows)
+                    {
+                        response.UnitDetailsList.Add(new Requisition_Unit_Details {
+                            UnitName = row["UnitName"].ToString(),
+                            UnitID = Convert.ToInt64(row["UnitID"]),
+                            CompanyID = Convert.ToInt64(row["CompanyID"]),
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while fetching data.", ex);
+            }
+        }
+        return response;
+    }
+
+    public AreaList GetRequisitionUnitAreaDetails(long unitId, long companyId)
     {
         AreaList response = new()
         {
@@ -62,6 +97,112 @@ public class RequisitionRepository : IRequisitionRepository
         }
         return response;
     }
+
+    public async Task<DataSet> GetRequisitionUnitAreaLocationDetails(long unitId, long areaId)
+    {
+        var ds = new DataSet();
+        using var conn = new SqlConnection(_connectionString);
+        var cmd = new SqlCommand("[dbo].[Usp_GetUnitAreaLocation]", conn)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+        cmd.Parameters.AddWithValue("@UnitID", unitId);
+        cmd.Parameters.AddWithValue("@AreaID", areaId);
+        var adapter = new SqlDataAdapter(cmd);
+        await conn.OpenAsync();
+        await Task.Run(() => adapter.Fill(ds));
+        return ds;
+    }
+
+    public async Task<long> InsertRequisitionDetails(Ims_Requisition_Model _params)
+    {
+        long result = -1;
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            try
+            {
+                using SqlCommand cmd = new("[dbo].[Usp_SaveRequisitionIns]", connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                var table = new DataTable();
+                table.Columns.Add("slno", typeof(long));
+                table.Columns.Add("ItemName", typeof(string));
+                table.Columns.Add("ItemID", typeof(long));
+                table.Columns.Add("Description", typeof(string));
+                table.Columns.Add("uomn", typeof(string));
+                table.Columns.Add("uom", typeof(long));
+                table.Columns.Add("assetn", typeof(string));
+                table.Columns.Add("asset", typeof(long));
+                table.Columns.Add("Qty", typeof(decimal));
+                table.Columns.Add("Rate", typeof(decimal));
+                table.Columns.Add("GrossAmount", typeof(decimal));
+
+                foreach (var item in _params.ReqItemJob)
+                {
+                    table.Rows.Add(item.slno, item.ItemName, item.ItemID, item.Description, item.uomn, item.uom, item.assetn, item.asset, item.Qty, item.Rate, item.GrossAmount);
+                }
+
+                cmd.Parameters.Add(new SqlParameter
+                {
+                    ParameterName = "@ReqItemJob",
+                    //SqlDbType = SqlDbType.Structured,
+                    TypeName = "dbo.ReqItemJobType06",
+                    Value = table
+                });
+
+
+                //cmd.Parameters.AddWithValue("@ReqItemJob", _params.ReqItemJob);
+                cmd.Parameters.AddWithValue("@ReqID", _params.ReqID);
+                cmd.Parameters.AddWithValue("@RefReqNo", _params.RefReqNo);
+                cmd.Parameters.AddWithValue("@ReqANMType", _params.ReqANMType);
+                cmd.Parameters.AddWithValue("@ReqNo", _params.ReqNo);
+                cmd.Parameters.AddWithValue("@ReqDate", _params.ReqDate);
+                cmd.Parameters.AddWithValue("@ReqType", _params.ReqType);
+                cmd.Parameters.AddWithValue("@Type", _params.Type);
+                cmd.Parameters.AddWithValue("@IsRateContract", _params.IsRateContract);
+                cmd.Parameters.AddWithValue("@WorkStatus", _params.WorkStatus);
+                cmd.Parameters.AddWithValue("@UnitID", _params.UnitID);
+                cmd.Parameters.AddWithValue("@LocationID", _params.LocationID);
+                cmd.Parameters.AddWithValue("@AreaID", _params.AreaID);
+                cmd.Parameters.AddWithValue("@Description", _params.Description);
+                cmd.Parameters.AddWithValue("@Remarks", _params.Remarks);
+                cmd.Parameters.AddWithValue("@Experiment", _params.Experiment);
+                cmd.Parameters.AddWithValue("@RejectRemarks", _params.RejectRemarks);
+                cmd.Parameters.AddWithValue("@Justification", _params.Justification);
+                cmd.Parameters.AddWithValue("@ContactNo", _params.ContactNo);
+                cmd.Parameters.AddWithValue("@InitBy", _params.InitBy);
+                cmd.Parameters.AddWithValue("@CompanyID", _params.CompanyID);
+                cmd.Parameters.AddWithValue("@CreatedUID", _params.CreatedUID);
+                cmd.Parameters.AddWithValue("@ApprovedBy", _params.ApprovedBy);
+                cmd.Parameters.AddWithValue("@ApprovalStatus", _params.ApprovalStatus);
+                cmd.Parameters.AddWithValue("@FrdStatus", _params.FrdStatus);
+                cmd.Parameters.AddWithValue("@ApprovedLevel", _params.ApprovedLevel);
+                cmd.Parameters.AddWithValue("@SuppDocName1", _params.SuppDocName1);
+                cmd.Parameters.AddWithValue("@SuppDoc1", _params.SuppDoc1);
+                cmd.Parameters.AddWithValue("@SuppDocName2", _params.SuppDocName2);
+                cmd.Parameters.AddWithValue("@SuppDoc2", _params.SuppDoc2);
+                cmd.Parameters.AddWithValue("@SuppDocName3", _params.SuppDocName3);
+                cmd.Parameters.AddWithValue("@SuppDoc3", _params.SuppDoc3);
+                cmd.Parameters.AddWithValue("@ApproveDate", _params.ApproveDate);
+                await connection.OpenAsync();
+                object returnValue = await cmd.ExecuteScalarAsync();
+                if (returnValue != null)
+                {
+                    result = Convert.ToInt64(returnValue);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while inserting requisition details.", ex);
+            }
+        }
+        return result;
+    }
+
+
+
+
+
 
     public async Task<DataSet> GetRemarks(long reqId)
     {
@@ -114,21 +255,7 @@ public class RequisitionRepository : IRequisitionRepository
         return ds;
     }
 
-    public async Task<DataSet> GetUnitAreaLocation(long unitId, long areaId)
-    {
-        var ds = new DataSet();
-        using var conn = new SqlConnection(_connectionString);
-        var cmd = new SqlCommand("[dbo].[Usp_GetUnitAreaLocation]", conn)
-        {
-            CommandType = CommandType.StoredProcedure
-        };
-        cmd.Parameters.AddWithValue("@UnitID", unitId);
-        cmd.Parameters.AddWithValue("@AreaID", areaId);
-        var adapter = new SqlDataAdapter(cmd);
-        await conn.OpenAsync();
-        await Task.Run(() => adapter.Fill(ds));
-        return ds;
-    }
+    
 
     public async Task<long> InsertOrUpdateUnitLOcation(Ims_Requisition_UnitLocation_Request _params)
     {
@@ -228,4 +355,62 @@ public class RequisitionRepository : IRequisitionRepository
         return result;
     }
     #endregion
+
+    
+
+    public async Task<long> UpdateRequisitionDetails(Ims_Requisition_Model _params)
+    {
+        long result = -1;
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            try
+            {
+                using SqlCommand cmd = new("[dbo].[Usp_SaveReqUpd]", connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@ReqID", _params.ReqID);
+                cmd.Parameters.AddWithValue("@RefReqNo", _params.RefReqNo);
+                cmd.Parameters.AddWithValue("@ReqANMType", _params.ReqANMType);
+                cmd.Parameters.AddWithValue("@ReqNo", _params.ReqNo);
+                cmd.Parameters.AddWithValue("@ReqDate", _params.ReqDate);
+                cmd.Parameters.AddWithValue("@ReqType", _params.ReqType);
+                cmd.Parameters.AddWithValue("@Type", _params.Type);
+                cmd.Parameters.AddWithValue("@IsRateContract", _params.IsRateContract);
+                cmd.Parameters.AddWithValue("@WorkStatus", _params.WorkStatus);
+                cmd.Parameters.AddWithValue("@UnitID", _params.UnitID);
+                cmd.Parameters.AddWithValue("@LocationID", _params.LocationID);
+                cmd.Parameters.AddWithValue("@AreaID", _params.AreaID);
+                cmd.Parameters.AddWithValue("@Description", _params.Description);
+                cmd.Parameters.AddWithValue("@Remarks", _params.Remarks);
+                cmd.Parameters.AddWithValue("@Experiment", _params.Experiment);
+                cmd.Parameters.AddWithValue("@RejectRemarks", _params.RejectRemarks);
+                cmd.Parameters.AddWithValue("@Justification", _params.Justification);
+                cmd.Parameters.AddWithValue("@ContactNo", _params.ContactNo);
+                cmd.Parameters.AddWithValue("@InitBy", _params.InitBy);
+                cmd.Parameters.AddWithValue("@CompanyID", _params.CompanyID);
+                cmd.Parameters.AddWithValue("@CreatedUID", _params.CreatedUID);
+                cmd.Parameters.AddWithValue("@ApprovedBy", _params.ApprovedBy);
+                cmd.Parameters.AddWithValue("@ApprovalStatus", _params.ApprovalStatus);
+                cmd.Parameters.AddWithValue("@FrdStatus", _params.FrdStatus);
+                cmd.Parameters.AddWithValue("@ApprovedLevel", _params.ApprovedLevel);
+                cmd.Parameters.AddWithValue("@SuppDocName1", _params.SuppDocName1);
+                cmd.Parameters.AddWithValue("@SuppDoc1", _params.SuppDoc1);
+                cmd.Parameters.AddWithValue("@SuppDocName2", _params.SuppDocName2);
+                cmd.Parameters.AddWithValue("@SuppDoc2", _params.SuppDoc2);
+                cmd.Parameters.AddWithValue("@SuppDocName3", _params.SuppDocName3);
+                cmd.Parameters.AddWithValue("@SuppDoc3", _params.SuppDoc3);
+                cmd.Parameters.AddWithValue("@ApproveDate", _params.ApproveDate);
+                await connection.OpenAsync();
+                object returnValue = cmd.ExecuteScalarAsync();
+                if (returnValue != null)
+                {
+                    result = Convert.ToInt64(returnValue);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating requisition details.", ex);
+            }
+        }
+        return result;
+    }
 }
