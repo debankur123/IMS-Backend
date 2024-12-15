@@ -83,6 +83,30 @@ namespace Inventory.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("GetRequisitionListData")]
+        public async Task<IActionResult> GetRequisitionSearchList(Ims_Requisition_ReqSearchList_Reponse _params)
+        {
+            try
+            {
+                var result = await _repo!.GetRequisitionSearchList(_params);
+                if (result.Tables[0].Rows.Count <= 0)
+                {
+                    return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+                }
+                var output = GeneralUtilityService.ConvertDataTableToDictionaryList(result.Tables[0]);
+                return Ok(output);
+            }
+            catch (SqlException sqlEx)
+            {
+                return StatusCode(500, new { message = "A database error occurred.", error = sqlEx.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An unexpected error occurred.", error = ex.Message });
+            }
+        }
+
 
 
 
@@ -129,29 +153,8 @@ namespace Inventory.Controllers
             var output = GeneralUtilityService.ConvertDataTableToDictionaryList(result.Tables[0]);
             return Ok(output);
         }
-        [HttpPost]
-        [Route("GetRequisitionSearchList")]
-        public async Task<IActionResult> GetRequisitionSearchList(Ims_Requisition_ReqSearchList_Reponse _params)
-        {
-            try
-            {
-                var result = await _repo!.GetRequisitionSearchList(_params);
-                if (result.Tables[0].Rows.Count <= 0)
-                {
-                    return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-                }
-                var output = GeneralUtilityService.ConvertDataTableToDictionaryList(result.Tables[0]);
-                return Ok(output);
-            }
-            catch (SqlException sqlEx)
-            {
-                return StatusCode(500, new { message = "A database error occurred.", error = sqlEx.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "An unexpected error occurred.", error = ex.Message });
-            }
-        }
+        
+        
         [HttpPost("InsertOrUpdateUnitLocation")]
         public async Task<IActionResult> InsertOrUpdateUnitLocation([FromBody] Ims_Requisition_UnitLocation_Request _bodyParams)
         {
