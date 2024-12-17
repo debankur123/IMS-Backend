@@ -7,58 +7,54 @@ namespace Inventory.Repository.IService;
 
 public interface IMasterRepository
 {
-    DataSet GetUOMs();
+    #region UOM
     int InsertOrUpdateUOM(Ims_M_UOM uom);
+    DataSet GetUOMs();
     DataSet SearchUOM(string uomName);
-    decimal InsertOrUpdateItem(Ims_M_Item_Request item);
-    Task<List<Ims_M_UnitLocation>> GetUnitLocations(int id);
-    Task<List<Ims_M_Area>> GetArea(int id);
-    Task<List<Ims_M_BindGridViewItem>> BindGridViewItem();
-    decimal InsertUpdateItemDetails(Ims_M_ItemDetailsRequest itemDetail);
-    decimal InsertUpdateItemMaintain(Ims_M_ItemMaintain_Request itemMaintain);
-    DataSet BindGridService();
-    DataSet BindGridAMCMain();
-    DataSet GetDataMaintain(long itemDetailId);
-    DataSet GetDataService(long itemDetailId);
-    DataSet SetDataItem(long itemId);
-    DataSet SearchGridBind(Ims_M_SearchGridBind obj);
-    DataSet SearchGridBindMain(long itemId, long companyId);
+    #endregion
+
+    #region Unit/SBU
+    int AddUpdateUnitDetails(UnitModel unit);
+    DataSet GetUnitDetailsList();
+    #endregion
 
     #region Area/Department
-    DataSet BindGridArea();
-    DataSet gridbindAreaSearch(string areaName);
-    decimal InsertUpdateArea(Ims_M_Area_Request obj);
+    DataSet GetAreaDepartmentDetailsList();
+    int AddUpdateAreaDepartmentDetails(AreaDepartmentModel area);
     #endregion
 
-    #region Unit Location/Lab
-    DataSet BindgridLocation();
-    DataSet gridbindLocationSearch(string locationName);
-    decimal InsertUpdateLocation(Ims_M_Location_Request obj);
+    #region Unit Location
+    DataSet GetUnitLocationDetailsList();
+    int AddUpdateUnitLocationDetails(UnitLocationModel unitLocation);
     #endregion
 
-    #region JobType/Job
-    DataSet GridBindJob();
-    DataSet GetJob(long jobId);
-    DataSet GridBindJobSearch(string jobName,long companyId);
-    long InsertUpdateJob(Ims_M_Job_Request obj);
+    #region Job Type Section
+    DataSet GetJobTypeDetailsList();
+    int AddUpdateJobTypeDetails(JobTypeModel jobType);
     #endregion
 
-    #region ItemGroup
-    DataSet GridBindItemGroup();
-    DataSet GridBindItemGroupNameSearch(string itemGroupName);
-    long InsertUpdateItemGroup(Ims_M_ItemGroup_Request obj);
+    #region Job Section
+    DataSet GetJobDetailsList();
+    int AddUpdateJobDetails(JobModel job);
     #endregion
 
-    #region ItemSubGroup
-    DataSet GridBindItemSubGroup();
-    DataSet GridBindItemSubGroupNameSearch(string itemSubGroupName);
-    long InsertUpdateItemSubGroup(Ims_M_ItemSubGroup_Request obj);
+    #region Item Group Section
+    DataSet GetItemGroupDetailsList();
+    int AddUpdateItemGroupDetails(ItemGroupModel itemGroup);
     #endregion
 
-    #region Bank
-    DataSet GridBindBank();
-    DataSet GetBank(long bankId);
-    DataSet GridBindBankSearch(string bankName);
-    long InsertOrUpdateBank(Ims_M_Bank_Request request);
+    #region Item Sub Group Section
+    DataSet GetItemSubGroupDetailsList();
+    int AddUpdateItemSubGroupDetails(ItemSubGroupModel itemSubGroup);
     #endregion
+
+    #region Bank Section
+    DataSet GetBankDetailsList();
+    int AddUpdateBankDetails(BankModel bank);
+    #endregion
+
+    #region Vendor Section
+    DataSet GetVendorDetailsList();
+    #endregion
+    
 }

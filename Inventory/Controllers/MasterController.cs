@@ -38,18 +38,7 @@ public class MasterController : ControllerBase
     }
     private readonly IMasterRepository _masterRepository;
 
-    [HttpGet("GetUOMs")]
-    public IActionResult GetUOMs()
-    {
-        var ds = _masterRepository.GetUOMs();
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-
+    #region UOM
     [HttpPost("SaveUOM")]
     public IActionResult SaveUOM([FromBody] Ims_M_UOM uom)
     {
@@ -62,6 +51,18 @@ public class MasterController : ControllerBase
         };
     }
 
+    [HttpGet("GetUOMs")]
+    public IActionResult GetUOMs()
+    {
+        var ds = _masterRepository.GetUOMs();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+
     [HttpGet("SearchUOM")]
     public IActionResult SearchUOM(string uomName)
     {
@@ -70,482 +71,235 @@ public class MasterController : ControllerBase
         var uomData = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
         return Ok(uomData);
     }
-
-    [HttpPost("SaveItem")]
-    public IActionResult SaveItem([FromBody] Ims_M_Item_Request item)
-    {
-        var result = _masterRepository.InsertOrUpdateItem(item);
-        switch (result)
-        {
-            case > 0:
-                Console.WriteLine("Item saved successfully with ID: " + result);
-                return Ok("Item saved successfully.");
-            case -7:
-                Console.WriteLine("Item already exists.");
-                return Conflict("Item already exists.");
-            default:
-                Console.WriteLine("Failed to save item. Error Code: " + result);
-                return BadRequest("Failed to save item.");
-        }
-    }
-
-    [HttpGet]
-    [Route("GetUnitLocations")]
-    public async Task<ActionResult<List<Ims_M_UnitLocation>>> GetUnitLocations(int id)
-    {
-        try
-        {
-            var locations = await _masterRepository.GetUnitLocations(id);
-            return Ok(locations);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "An error occurred while processing your request." + ex.Message);
-        }
-    }
-
-    [HttpGet]
-    [Route("GetAreas")]
-    public async Task<ActionResult<List<Ims_M_Area>>> GetAreas(int id)
-    {
-        try
-        {
-            var areas = await _masterRepository.GetArea(id);
-            return Ok(areas);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "An error occurred while processing your request." + ex.Message);
-        }
-    }
-    [HttpGet]
-    [Route("BindGridViewItem")]
-    public async Task<ActionResult<List<Ims_M_BindGridViewItem>>> BindGridViewItem()
-    {
-        try
-        {
-            var items = await _masterRepository.BindGridViewItem();
-            return Ok(items);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "An error occurred while processing your request." + ex.Message);
-        }
-    }
-
-    [HttpPost]
-    [Route("InsertUpdateItemDetail")]
-    public ActionResult InsertUpdateItemDetail([FromBody] Ims_M_ItemDetailsRequest itemDetail)
-    {
-        if (itemDetail is null)
-        {
-            return BadRequest("Invalid Item Details");
-        }
-        try
-        {
-            var output = _masterRepository.InsertUpdateItemDetails(itemDetail);
-            return Ok(new
-            {
-                StatusMsg = "1",
-                HasError = "No",
-                Message = "Request processed successfully!",
-                Output = output
-            });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "Internal server error" + ex.Message);
-        }
-    }
-
-    [HttpPost]
-    [Route("InsertUpdateItemMaintain")]
-    public ActionResult InsertUpdateItemMaintain([FromBody] Ims_M_ItemMaintain_Request obj)
-    {
-        try
-        {
-            var result = _masterRepository.InsertUpdateItemMaintain(obj);
-            if (result == -1)
-            {
-                return StatusCode(500, "An error occurred while processing the request.");
-            }
-            return Ok(new
-            {
-                StatusMsg = "1",
-                HasError = "No",
-                Message = "Request processed successfully!",
-                Output = result
-            });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
-    [HttpGet]
-    [Route("BindGridService")]
-    public ActionResult BindGridService()
-    {
-        var ds = _masterRepository.BindGridService();
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpGet]
-    [Route("BindGridAMCMain")]
-    public ActionResult BindGridAMCMain()
-    {
-        var ds = _masterRepository.BindGridAMCMain();
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpGet]
-    [Route("GetDataMaintain")]
-    public ActionResult GetDataMaintain(long itemDetailId)
-    {
-        var ds = _masterRepository.GetDataMaintain(itemDetailId);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpGet]
-    [Route("GetDataService")]
-    public ActionResult GetDataService(long itemDetailId)
-    {
-        var ds = _masterRepository.GetDataService(itemDetailId);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpGet]
-    [Route("SetDataItem")]
-    public ActionResult SetDataItem(long itemId)
-    {
-        var ds = _masterRepository.SetDataItem(itemId);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpPost]
-    [Route("SearchGridBind")]
-    public ActionResult SearchGridBind(Ims_M_SearchGridBind obj)
-    {
-        var ds = _masterRepository.SearchGridBind(obj);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpPost]
-    [Route("SearchGridBindMain")]
-    public ActionResult SearchGridBindMain(long itemId, long companyId)
-    {
-        var ds = _masterRepository.SearchGridBindMain(itemId, companyId);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpGet]
-    [Route("GridBindAreaSearch")]
-    public ActionResult GridBindAreaSearch(string? areaName = null)
-    {
-        var ds = _masterRepository.gridbindAreaSearch(areaName!);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpPost("InsertUpdateArea")]
-    public IActionResult InsertUpdateArea([FromBody] Ims_M_Area_Request model)
-    {
-        if (model == null)
-            return BadRequest("Invalid data.");
-        try
-        {
-            var result = _masterRepository.InsertUpdateArea(model);
-            return result switch
-            {
-                -7 => Conflict("Area with the same name already exists."),
-                -1 => StatusCode(StatusCodes.Status500InternalServerError,
-                    "An error occurred while processing the request."),
-                _ => Ok(new
-                {
-                    StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result
-                })
-            };
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-        }
-    }
-    [HttpGet]
-    [Route("BindGridLocation")]
-    public ActionResult BindGridLocation()
-    {
-        var ds = _masterRepository.BindgridLocation();
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpGet]
-    [Route("GridBindLocationSearch")]
-    public ActionResult GridBindLocationSearch(string? locationName = null)
-    {
-        var ds = _masterRepository.gridbindLocationSearch(locationName!);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpPost("InsertUpdateLocation")]
-    public IActionResult InsertUpdateLocation([FromBody] Ims_M_Location_Request request)
-    {
-        try
-        {
-            var result = _masterRepository.InsertUpdateLocation(request);
-            return result switch
-            {
-                -1 => StatusCode(500, "An error occurred during the transaction."),
-                -7 => Conflict("Duplicate Location found for the given Area."),
-                _ => Ok(new
-                {
-                    StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result
-                })
-            };
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ex.Message);
-        }
-    }
-    #region JobType/Job
-    [HttpGet]
-    [Route("GridBindJob")]
-    public ActionResult GridBindJob()
-    {
-        var ds = _masterRepository.GridBindJob();
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpGet]
-    [Route("GetJob")]
-    public ActionResult GetJob(long jobId)
-    {
-        var ds = _masterRepository.GetJob(jobId);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpGet]
-    [Route("GridBindJobSearch")]
-    public ActionResult GridBindJobSearch(string? jobName=null,long companyId=0)
-    {
-        var ds = _masterRepository.GridBindJobSearch(jobName!,companyId);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpPost("InsertUpdateJob")]
-    public IActionResult InsertUpdateJob([FromBody] Ims_M_Job_Request request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        var result = _masterRepository.InsertUpdateJob(request);
-        if (result == -1)
-        {
-            return StatusCode(500, "An error occurred during the transaction.");
-        }
-        else if (result == -7)
-        {
-            return Conflict("A job with the same name already exists.");
-        } 
-        return Ok(new { StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result });
-    }
     #endregion
 
-    #region ItemGroup
-    [HttpGet]
-    [Route("GridBindItemGroup")]
-    public ActionResult GridBindItemGroup()
+    #region Unit/SBU
+    [HttpPost("PostAddUpdateUnitDetails")]
+    public IActionResult AddUpdateUnitDetails([FromBody] UnitModel unit)
     {
-        var ds = _masterRepository.GridBindItemGroup();
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpGet]
-    [Route("GridBindItemGroupNameSearch")]
-    public ActionResult GridBindItemGroupNameSearch(string search)
-    {
-        var ds = _masterRepository.GridBindItemGroupNameSearch(search);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpPost("InsertUpdateItemGroup")]
-    public IActionResult InsertUpdateItemGroup([FromBody] Ims_M_ItemGroup_Request request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        var result = _masterRepository.InsertUpdateItemGroup(request);
-        if (result == -1)
-        {
-            return StatusCode(500, "An error occurred during the transaction.");
-        }
-        else if (result == -7)
-        {
-            return Conflict("An item group with the same name already exists.");
-        } 
-        return Ok(new { StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result });
-    }
-    #endregion
-    #region ItemSubGroup
-    [HttpGet]
-    [Route("GridBindItemSubGroup")]
-    public ActionResult GridBindItemSubGroup()
-    {
-        var ds = _masterRepository.GridBindItemSubGroup();
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpGet]
-    [Route("GridBindItemSubGroupNameSearch")]
-    public ActionResult GridBindItemSubGroupNameSearch(string itemSubGroupName)
-    {
-        var ds = _masterRepository.GridBindItemSubGroupNameSearch(itemSubGroupName);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpPost("InsertUpdateItemSubGroup")]
-    public IActionResult InsertUpdateItemSubGroup([FromBody] Ims_M_ItemSubGroup_Request request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        var result = _masterRepository.InsertUpdateItemSubGroup(request);
-        if (result == -1)
-        {
-            return StatusCode(500, "An error occurred during the transaction.");
-        }
-        else if (result == -7)
-        {
-            return Conflict("An item sub group with the same name already exists.");
-        } 
-        return Ok(new { StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result });
-    }
-    #endregion
-    #region Bank
-    [HttpGet]
-    [Route("GridBindBank")]
-    public ActionResult GridBindBank()
-    {
-        var ds = _masterRepository.GridBindBank();
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpGet]
-    [Route("GetBank")]
-    public ActionResult GetBank(long bankId)
-    {
-        var ds = _masterRepository.GetBank(bankId);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpGet]
-    [Route("GridBindBankSearch")]
-    public ActionResult GridBindBankSearch(string? bankName=null)
-    {
-        var ds = _masterRepository.GridBindBankSearch(bankName!);
-        if (ds.Tables[0].Rows.Count <= 0)
-        {
-            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
-        }
-        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
-        return Ok(output);
-    }
-    [HttpPost("InsertUpdateBank")]
-    public IActionResult InsertUpdateBank([FromBody] Ims_M_Bank_Request request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        var result = _masterRepository.InsertOrUpdateBank(request);
+        var result = _masterRepository.AddUpdateUnitDetails(unit);
         return result switch
         {
-            -1 => StatusCode(500, "An error occurred during the transaction."),
-            -7 => Conflict("bank with the same name already exists."),
-            _ => Ok(new
-            {
-                StatusMsg = "1", HasError = "No", Message = "Request processed successfully!", Output = result
-            })
+            > 0 => Ok("Unit Details saved successfully."),
+            -2 => Ok("Unit Details updated successfully."),
+            -7 => Conflict("Unit already exists."),
+            _ => BadRequest("Failed to save Unit.")
         };
+    }
+
+    [HttpGet("GetUnitDetailsList")]
+    public IActionResult GetUnitDetailsList()
+    {
+        var ds = _masterRepository.GetUnitDetailsList();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+    #endregion
+
+    #region Area/Department
+    [HttpGet("GetAreaDepartmentDetailsList")]
+    public IActionResult GetAreaDepartmentDetailsList()
+    {
+        var ds = _masterRepository.GetAreaDepartmentDetailsList();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+
+    [HttpPost("PostAddUpdateAreaDepartmentDetails")]
+    public IActionResult AddUpdateAreaDepartmentDetails([FromBody] AreaDepartmentModel area)
+    {
+        var result = _masterRepository.AddUpdateAreaDepartmentDetails(area);
+        return result switch
+        {
+            > 0 => Ok("Area Details saved successfully."),
+            -2 => Ok("Area Details updated successfully."),
+            -7 => Conflict("Area already exists."),
+            _ => BadRequest("Failed to save Area.")
+        };
+    }
+    #endregion
+
+    #region Unit Location
+    [HttpGet("GetUnitLocationDetailsList")]
+    public IActionResult GetUnitLocationDetailsList()
+    {
+        var ds = _masterRepository.GetUnitLocationDetailsList();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+
+    [HttpPost("PostAddUpdateUnitLocationDetails")]
+    public IActionResult AddUpdateUnitLocationDetails([FromBody] UnitLocationModel unitLocation)
+    {
+        var result = _masterRepository.AddUpdateUnitLocationDetails(unitLocation);
+        return result switch
+        {
+            > 0 => Ok("Unit Location Details saved successfully."),
+            -2 => Ok("Unit Location Details updated successfully."),
+            -7 => Conflict("Unit Location already exists."),
+            _ => BadRequest("Failed to save Unit Location.")
+        };
+    }
+    #endregion
+
+    #region Job Type Section
+    [HttpGet("GetJobTypeDetailsList")]
+    public IActionResult GetJobTypeDetailsList()
+    {
+        var ds = _masterRepository.GetJobTypeDetailsList();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+
+    [HttpPost("PostAddUpdateJobTypeDetails")]
+    public IActionResult AddUpdateJobTypeDetails([FromBody] JobTypeModel jobType)
+    {
+        var result = _masterRepository.AddUpdateJobTypeDetails(jobType);
+        return result switch
+        {
+            > 0 => Ok("Job type details saved successfully."),
+            -2 => Ok("Job type details updated successfully."),
+            -7 => Conflict("Job type already exists."),
+            _ => BadRequest("Failed to save Job Type.")
+        };
+    }
+    #endregion
+
+    #region Job Section
+    [HttpGet("GetJobDetailsList")]
+    public IActionResult GetJobDetailsList()
+    {
+        var ds = _masterRepository.GetJobDetailsList();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+
+    [HttpPost("PostAddUpdateJobDetails")]
+    public IActionResult AddUpdateJobDetails([FromBody] JobModel job)
+    {
+        var result = _masterRepository.AddUpdateJobDetails(job);
+        return result switch
+        {
+            > 0 => Ok("Job Details saved successfully."),
+            -2 => Ok("Job Details updated successfully."),
+            -7 => Conflict("Job already exists."),
+            _ => BadRequest("Failed to save Job.")
+        };
+    }
+    #endregion
+
+    #region Item Group Section
+    [HttpGet("GetItemGroupDetailsList")]
+    public IActionResult GetItemGroupDetailsList()
+    {
+        var ds = _masterRepository.GetItemGroupDetailsList();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+
+    [HttpPost("PostAddUpdateItemGroupDetails")]
+    public IActionResult AddUpdateItemGroupDetails([FromBody] ItemGroupModel itemGroup)
+    {
+        var result = _masterRepository.AddUpdateItemGroupDetails(itemGroup);
+        return result switch
+        {
+            > 0 => Ok("Item Group details saved successfully."),
+            -2 => Ok("Item Group details updated successfully."),
+            -7 => Conflict("Item Group already exists."),
+            _ => BadRequest("Failed to save Item Group.")
+        };
+    }
+    #endregion
+
+    #region Item Sub Group Section
+    [HttpGet("GetItemSubGroupDetailsList")]
+    public IActionResult GetItemSubGroupDetailsList()
+    {
+        var ds = _masterRepository.GetItemSubGroupDetailsList();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+
+    [HttpPost("PostAddUpdateItemSubGroupDetails")]
+    public IActionResult AddUpdateItemSubGroupDetails([FromBody] ItemSubGroupModel itemSubGroup)
+    {
+        var result = _masterRepository.AddUpdateItemSubGroupDetails(itemSubGroup);
+        return result switch
+        {
+            > 0 => Ok("Item Sub Group details saved successfully."),
+            -2 => Ok("Item Sub Group details updated successfully."),
+            -7 => Conflict("Item Sub Group already exists."),
+            _ => BadRequest("Failed to save Item Sub Group.")
+        };
+    }
+    #endregion
+
+    #region Bank Section
+    [HttpGet("GetBankDetailsList")]
+    public IActionResult GetBankDetailsList()
+    {
+        var ds = _masterRepository.GetBankDetailsList();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
+    }
+
+    [HttpPost("PostAddUpdateBankDetails")]
+    public IActionResult AddUpdateBankDetails([FromBody] BankModel bank)
+    {
+        var result = _masterRepository.AddUpdateBankDetails(bank);
+        return result switch
+        {
+            > 0 => Ok("Bank details saved successfully."),
+            -2 => Ok("Bank details updated successfully."),
+            -7 => Conflict("Bank already exists."),
+            _ => BadRequest("Failed to save Bank.")
+        };
+    }
+    #endregion
+
+    #region Vendor Section
+    [HttpGet("GetVendorDetailsList")]
+    public IActionResult GetVendorDetailsList()
+    {
+        var ds = _masterRepository.GetVendorDetailsList();
+        if (ds.Tables[0].Rows.Count <= 0)
+        {
+            return Ok(new { message = "No records found.", data = new List<Dictionary<string, object>>() });
+        }
+        var output = GeneralUtilityService.ConvertDataTableToDictionaryList(ds.Tables[0]);
+        return Ok(output);
     }
     #endregion
 }

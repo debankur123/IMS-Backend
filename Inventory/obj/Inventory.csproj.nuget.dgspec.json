@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "/home/debankur/MyWorkSpace/IMS-Backend/Inventory/Inventory.csproj": {}
+    "D:\\DOT NET API PROJECT FOR BIKASH DA\\NEW API PROJECT\\IMS-Backend\\Inventory\\Inventory.csproj": {}
   },
   "projects": {
-    "/home/debankur/MyWorkSpace/IMS-Backend/Common_Helper/Common_Helper.csproj": {
+    "D:\\DOT NET API PROJECT FOR BIKASH DA\\NEW API PROJECT\\IMS-Backend\\Common_Helper\\Common_Helper.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/debankur/MyWorkSpace/IMS-Backend/Common_Helper/Common_Helper.csproj",
+        "projectUniqueName": "D:\\DOT NET API PROJECT FOR BIKASH DA\\NEW API PROJECT\\IMS-Backend\\Common_Helper\\Common_Helper.csproj",
         "projectName": "Common_Helper",
-        "projectPath": "/home/debankur/MyWorkSpace/IMS-Backend/Common_Helper/Common_Helper.csproj",
-        "packagesPath": "/home/debankur/.nuget/packages/",
-        "outputPath": "/home/debankur/MyWorkSpace/IMS-Backend/Common_Helper/obj/",
+        "projectPath": "D:\\DOT NET API PROJECT FOR BIKASH DA\\NEW API PROJECT\\IMS-Backend\\Common_Helper\\Common_Helper.csproj",
+        "packagesPath": "C:\\Users\\Prasanta Saren\\.nuget\\packages\\",
+        "outputPath": "D:\\DOT NET API PROJECT FOR BIKASH DA\\NEW API PROJECT\\IMS-Backend\\Common_Helper\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/debankur/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Prasanta Saren\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -67,34 +69,36 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.110/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/home/debankur/MyWorkSpace/IMS-Backend/Inventory/Inventory.csproj": {
+    "D:\\DOT NET API PROJECT FOR BIKASH DA\\NEW API PROJECT\\IMS-Backend\\Inventory\\Inventory.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/debankur/MyWorkSpace/IMS-Backend/Inventory/Inventory.csproj",
+        "projectUniqueName": "D:\\DOT NET API PROJECT FOR BIKASH DA\\NEW API PROJECT\\IMS-Backend\\Inventory\\Inventory.csproj",
         "projectName": "Inventory",
-        "projectPath": "/home/debankur/MyWorkSpace/IMS-Backend/Inventory/Inventory.csproj",
-        "packagesPath": "/home/debankur/.nuget/packages/",
-        "outputPath": "/home/debankur/MyWorkSpace/IMS-Backend/Inventory/obj/",
+        "projectPath": "D:\\DOT NET API PROJECT FOR BIKASH DA\\NEW API PROJECT\\IMS-Backend\\Inventory\\Inventory.csproj",
+        "packagesPath": "C:\\Users\\Prasanta Saren\\.nuget\\packages\\",
+        "outputPath": "D:\\DOT NET API PROJECT FOR BIKASH DA\\NEW API PROJECT\\IMS-Backend\\Inventory\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/debankur/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Prasanta Saren\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/home/debankur/MyWorkSpace/IMS-Backend/Common_Helper/Common_Helper.csproj": {
-                "projectPath": "/home/debankur/MyWorkSpace/IMS-Backend/Common_Helper/Common_Helper.csproj"
+              "D:\\DOT NET API PROJECT FOR BIKASH DA\\NEW API PROJECT\\IMS-Backend\\Common_Helper\\Common_Helper.csproj": {
+                "projectPath": "D:\\DOT NET API PROJECT FOR BIKASH DA\\NEW API PROJECT\\IMS-Backend\\Common_Helper\\Common_Helper.csproj"
               }
             }
           }
@@ -140,6 +144,10 @@
             "Microsoft.Azure.KeyVault": {
               "target": "Package",
               "version": "[3.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Analyzers": {
+              "target": "Package",
+              "version": "[7.0.14, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -195,7 +203,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.110/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
